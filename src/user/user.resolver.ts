@@ -1,5 +1,4 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
 import { UserInputType } from './interface/user.input';
 import { LoginInputType } from './interface/login.input';
 import { join } from 'path';
