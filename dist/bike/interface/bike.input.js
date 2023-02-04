@@ -10,8 +10,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BikeInputType = void 0;
-const graphql_1 = require("@nestjs/graphql");
 const GraphQLUpload = require("graphql-upload/GraphQLUpload.js");
+const graphql_1 = require("@nestjs/graphql");
 const class_validator_1 = require("class-validator");
 const class_transformer_1 = require("class-transformer");
 let BikeInputType = class BikeInputType {
