@@ -1,3 +1,4 @@
+import { MyLogger } from './../MyLogger';
 import { GetIdInput } from './interface/GetId.input';
 import { AddLikeInterface } from './interface/addLike.interface';
 import { AddCommentInterface } from './interface/AddComInter.interface';
@@ -28,24 +29,28 @@ import { GetUser } from '../user/get-user.decorator';
 @UseGuards(MySuperGuard)
 export class BikeResolver {
   constructor(private bikeService: BikeService) {}
-
+  private readonly logger = new MyLogger();
   @Query(() => [BikesType])
   async getBikes(): Promise<BikesType[]> {
+    this.logger.verbose('GetBikes Called');
     return await this.bikeService.getBikes();
   }
 
   @Query(() => BikesType)
   async getBike(@Args('data') data: GetIdInput): Promise<BikesType> {
+    this.logger.verbose('GetBike Called');
     return await this.bikeService.getBike(data.id);
   }
 
   @Query(() => BikesType)
   async getMostLiked(): Promise<BikesType> {
+    this.logger.verbose('GetMostLikedBike Called');
     return this.bikeService.getMostLiked();
   }
 
   @Query(() => [BikesType])
   async getByType(@Args('data') data: GetIdInput): Promise<BikesType[]> {
+    this.logger.verbose('GetByType Called');
     return await this.bikeService.getByType(data.id);
   }
 
@@ -53,12 +58,14 @@ export class BikeResolver {
   async getMostRecent(
     @Args('top', { nullable: true }) top: number,
   ): Promise<BikesType[]> {
+    this.logger.verbose('GetMostRecent Called');
     return this.bikeService.getMostRecent(top);
   }
 
   @Mutation(() => Number)
   async addLike(@GetUser() user: User, @Args('data') data: AddLikeInput) {
     const Like: AddLikeInterface = { BikeId: data.BikeId, UserId: user.id };
+    this.logger.verbose('addLike Called');
     return this.bikeService.addLike(Like);
   }
 
@@ -69,6 +76,7 @@ export class BikeResolver {
   ): Promise<number> {
     const commentdata: Partial<AddCommentInterface> = data;
     commentdata.id = user.id;
+    this.logger.verbose('AddComment Called');
     return this.bikeService.addComment(commentdata);
   }
 
@@ -113,6 +121,7 @@ export class BikeResolver {
             });
         },
       );
+      this.logger.verbose('AddedBike Successfully');
       return await data;
     } catch (err) {
       throw new InternalServerErrorException('Bike name already used');
@@ -124,6 +133,7 @@ export class BikeResolver {
     @GetUser() user: User,
     @Args('data') data: BikeUpdateInput,
   ): Promise<number> {
+    this.logger.verbose('EditBike Called');
     return await this.bikeService.editBike(data, user.id);
   }
 
@@ -132,6 +142,7 @@ export class BikeResolver {
     @GetUser() user: User,
     @Args('data') data: GetIdInput,
   ): Promise<string> {
+    this.logger.verbose('DeleteBike Called');
     return await this.bikeService.deleteBike(data.id, user.id);
   }
 

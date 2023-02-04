@@ -1,5 +1,3 @@
-import { JwtService } from '@nestjs/jwt';
-import { UserService } from './user/user.service';
 import { ConfigModule } from '@nestjs/config';
 import { Bike } from './bike/bike.entity';
 import { BikeType } from './bike-type/bike-type.entity';

@@ -1,11 +1,7 @@
 import { AddTypeInterface } from './interface/addType.interface';
 import { BikeType } from './bike-type.entity';
 import { BTType } from './bike-type.type';
-import {
-  CannotExecuteNotConnectedError,
-  DataSource,
-  Repository,
-} from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { v4 as uuid } from 'uuid';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 
@@ -16,26 +12,34 @@ export class BTRepository extends Repository<BikeType> {
   }
 
   async getBikeTypes(): Promise<BikeType[]> {
-    return await this.find();
+    try {
+      return await this.find();
+    } catch (err) {
+      throw err;
+    }
   }
   async addBikeType(data: AddTypeInterface): Promise<BTType> {
-    const newBike = this.create({
-      id: uuid(),
-      name: data.name,
-      createdBy: data.id,
-    });
     try {
+      const newBike = this.create({
+        id: uuid(),
+        name: data.name,
+        createdBy: data.id,
+      });
       return await this.save(newBike);
     } catch (err) {
       if (err.code === 11000)
         throw new InternalServerErrorException(
           'Duplicate Entry For Type Name not Allowed',
         );
-      else throw new InternalServerErrorException('something Went Wrong');
+      else throw err;
     }
   }
 
   async getType(id: string): Promise<BTType> {
-    return await this.findOne({ where: { id: id } });
+    try {
+      return await this.findOne({ where: { id: id } });
+    } catch (err) {
+      throw err;
+    }
   }
 }

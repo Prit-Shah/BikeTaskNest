@@ -39,30 +39,38 @@ export class UserRepository extends Repository<User> {
   }
 
   async LoginUser(loginData: LoginInterface): Promise<{ AccessToken: string }> {
-    const findUser: UserType = await this.findOne({
-      where: { email: loginData.email },
-    });
+    try {
+      const findUser: UserType = await this.findOne({
+        where: { email: loginData.email },
+      });
 
-    if (findUser) {
-      if (await bcrypt.compare(loginData.password, findUser.password)) {
-        const payload: jwtPayload = { userid: findUser.id };
+      if (findUser) {
+        if (await bcrypt.compare(loginData.password, findUser.password)) {
+          const payload: jwtPayload = { userid: findUser.id };
 
-        const AccessToken: string = await this.jwtservice.signAsync(payload, {
-          secret: this.configservice.get<string>('JWT_SECRET'),
-          expiresIn: '30m',
-        });
-        return { AccessToken };
+          const AccessToken: string = await this.jwtservice.signAsync(payload, {
+            secret: this.configservice.get<string>('JWT_SECRET'),
+            expiresIn: '30m',
+          });
+          return { AccessToken };
+        } else {
+          throw new UnauthorizedException(`Password not Correct`);
+        }
       } else {
-        throw new UnauthorizedException(`Password not Correct`);
+        throw new BadRequestException(`Email not Registered`);
       }
-    } else {
-      throw new BadRequestException(`Email not Registered`);
+    } catch (err) {
+      throw err;
     }
   }
   async getUser(id: string): Promise<Partial<UserType>> {
-    const data = await this.findOne({
-      where: { id: id },
-    });
-    return data;
+    try {
+      const data = await this.findOne({
+        where: { id: id },
+      });
+      return data;
+    } catch (err) {
+      throw err;
+    }
   }
 }
